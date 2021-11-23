@@ -1,0 +1,186 @@
+{
+    "extends": [
+        "airbnb",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "plugin:@typescript-eslint/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": "./tsconfig.eslint.json"
+    },
+    "rules": {
+        "@typescript-eslint/ban-ts-comment": ["off"],
+        "radix": ["off"],
+        "@typescript-eslint/explicit-function-return-type": [
+            "off"
+        ],
+        "@typescript-eslint/explicit-member-accessibility": [
+            "off"
+        ],
+        "@typescript-eslint/func-call-spacing": [
+            "warn"
+        ],
+        "@typescript-eslint/indent": [
+            "error",
+            "tab",
+            {
+                "SwitchCase": 1
+            }
+        ],
+        "@typescript-eslint/interface-name-prefix": "off",
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-unused-vars": [
+            1,
+            {
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        "@typescript-eslint/no-use-before-define": [
+            "off"
+        ],
+        "@typescript-eslint/semi": [
+            "warn"
+        ],
+        "array-bracket-spacing": [
+            "warn",
+            "always"
+        ],
+        "arrow-parens": [
+            "warn",
+            "as-needed"
+        ],
+        "class-methods-use-this": "off",
+        "curly": "error",
+        "eol-last": [
+            "warn",
+            "always"
+        ],
+        "func-call-spacing": "off",
+        "global-require": 0,
+        "import/extensions": "off",
+        "import/no-unresolved": [
+            "error",
+            {
+                "caseSensitive": false,
+                "ignore": [
+                    "@assets",
+                    "@components",
+                    "@elements",
+                    "@redux",
+                    "@util"
+                ]
+            }
+        ],
+        "import/no-extraneous-dependencies": "warn",
+        "import/prefer-default-export": "off",
+        "indent": "off",
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "lines-between-class-members": "off",
+        "max-len": [
+            1,
+            {
+                "code": 120,
+                "ignoreComments": true
+            }
+        ],
+        "no-async-promise-executor": "warn",
+        "no-confusing-arrow": [
+            "error",
+            {
+                "allowParens": true
+            }
+        ],
+		"no-console": "warn",
+        "no-continue": "off",
+        "no-empty-function": "off",
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2,
+                "maxBOF": 1,
+                "maxEOF": 1
+            }
+        ],
+        "no-plusplus": [
+            "error",
+            {
+                "allowForLoopAfterthoughts": true
+            }
+        ],
+        "no-shadow": "warn",
+        "no-tabs": [
+            "error",
+            {
+                "allowIndentationTabs": true
+            }
+        ],
+        "no-undef": "off",
+        "no-unused-expressions": "off",
+        "no-use-before-define": "warn",
+        "prefer-object-spread": "warn",
+        "quotes": [
+            "error",
+            "single",
+            "avoid-escape"
+        ],
+        "react/destructuring-assignment": [
+            "warn"
+        ],
+        "react/jsx-boolean-value": [
+            "warn",
+            "always"
+        ],
+        "react/jsx-filename-extension": [
+            "warn",
+            {
+                "extensions": [
+                    ".ts",
+                    ".tsx"
+                ]
+            }
+        ],
+        "react/jsx-indent": [
+            "warn",
+            "tab"
+        ],
+        "react/jsx-indent-props": [
+            "warn",
+            "tab"
+        ],
+        "react/jsx-props-no-spreading": "warn",
+        "react/no-unescaped-entities": [
+            "error",
+            {
+                "forbid": [
+                    ">",
+                    "}"
+                ]
+            }
+        ],
+        "react/prop-types": "warn",
+        "react/require-default-props": "off",
+        "semi": [
+            "error",
+            "always"
+        ],
+        "operator-linebreak": 0,
+        "implicit-arrow-linebreak": 0,
+        "function-paren-newline": 0,
+        "object-curly-newline": 0
+    },
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "extensions": [
+                    ".js",
+                    ".jsx",
+                    ".ts",
+                    ".tsx"
+                ]
+            }
+        }
+    }
+}
