@@ -49,9 +49,10 @@ export async function getImagesFromPayload(apiResponse:NasaApiResponse):Promise<
 	apiResponse.photos.forEach(({ img_src }) => urls.push(img_src));
 	const images: string[] = [];
 	await Promise.all(urls.map(async url => {
-		await axios.get(url).then(response => {
+		await axios.get(url, { responseType: 'arraybuffer' }).then(response => {
 			const imageAsBase64 = Buffer.from(response.data, 'binary').toString('base64');
-			images.push(imageAsBase64);
+			const base64Uri = `data:image/jpeg;base64,${imageAsBase64}`;
+			images.push(base64Uri);
 		});
 	}));
 	return Promise.resolve(images);

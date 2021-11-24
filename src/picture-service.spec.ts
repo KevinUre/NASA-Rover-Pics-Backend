@@ -143,10 +143,10 @@ describe('Picture Service', () => {
 			const actual = await getImagesFromPayload(apiResponse);
 
 			expect(actual.length).toBe(2);
-			expect(actual).toContain(Buffer.from('data').toString('base64'));
+			expect(actual).toContain(`data:image/jpeg;base64,${Buffer.from('data').toString('base64')}`);
 			expect(axiosGetSpy).toHaveBeenCalledTimes(2);
-			expect(axiosGetSpy).toHaveBeenNthCalledWith(1, 'url1');
-			expect(axiosGetSpy).toHaveBeenNthCalledWith(2, 'url2');
+			expect(axiosGetSpy).toHaveBeenNthCalledWith(1, 'url1', { responseType: 'arraybuffer' });
+			expect(axiosGetSpy).toHaveBeenNthCalledWith(2, 'url2', { responseType: 'arraybuffer' });
 
 			axiosGetSpy.mockClear();
 		});
