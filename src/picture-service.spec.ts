@@ -3,7 +3,8 @@ import axios from 'axios';
 import { validateRequestParameters,
 	getPicturesByRoverAndDate,
 	checkCacheForPictures,
-	getImagesFromPayload } from './picture-service';
+	getImagesFromPayload,
+	preloadCache } from './picture-service';
 import * as pictureServiceModule from './picture-service';
 import { NasaApiResponse } from './nasa-api-model';
 
@@ -187,6 +188,7 @@ describe('Picture Service', () => {
 			expect(mockResponse.json).toHaveBeenCalledWith({ images: [ 'image' ] });
 			expect(validateSpy).toHaveBeenCalled();
 			expect(getCacheSpy).toHaveBeenCalled();
+			expect(getUrlSpy).toHaveBeenCalled();
 			expect(getImagesSpy).toHaveBeenCalled();
 			expect(addCacheSpy).toHaveBeenCalledWith('curiosity', '15-12-30', [ 'image' ]);
 			expect(axiosGetSpy).toHaveBeenCalledWith('stub url');
@@ -221,6 +223,8 @@ describe('Picture Service', () => {
 			expect(validateSpy).toHaveBeenCalled();
 			expect(getCacheSpy).not.toHaveBeenCalled();
 			expect(getUrlSpy).not.toHaveBeenCalled();
+			expect(addCacheSpy).not.toHaveBeenCalled();
+			expect(getImagesSpy).not.toHaveBeenCalled();
 			expect(axiosGetSpy).not.toHaveBeenCalled();
 		});
 
@@ -250,8 +254,54 @@ describe('Picture Service', () => {
 			expect(validateSpy).toHaveBeenCalled();
 			expect(getCacheSpy).toHaveBeenCalled();
 			expect(getImagesSpy).not.toHaveBeenCalled();
-			expect(addCacheSpy).not.toHaveBeenCalledWith('15-12-30', [ 'image' ]);
-			expect(axiosGetSpy).not.toHaveBeenCalledWith('stub url');
+			expect(getUrlSpy).not.toHaveBeenCalled();
+			expect(addCacheSpy).not.toHaveBeenCalled();
+			expect(axiosGetSpy).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('preloadCache', () => {
+		it('calls and stores for a given date', async () => {
+			const axiosGetSpy = jest.spyOn(axios, 'get').mockReturnValue(Promise.resolve({ data: Buffer.from('data') }));
+			const addCacheSpy = jest.spyOn(pictureServiceModule, 'addDataToCache');
+			const getUrlSpy = jest.spyOn(pictureServiceModule, 'getUrl').mockReturnValue('stub url');
+			const getImagesSpy = jest.spyOn(pictureServiceModule, 'getImagesFromPayload').mockReturnValue(Promise.resolve([ 'image' ]));
+
+			await preloadCache([ '02/27/2017' ]);
+
+			expect(axiosGetSpy).toHaveBeenCalledWith('stub url');
+			expect(getImagesSpy).toHaveBeenCalledWith(Buffer.from('data'));
+			expect(addCacheSpy).toHaveBeenCalledWith('Curiosity', '2017-02-27', [ 'image' ]);
+			expect(getUrlSpy).toHaveBeenCalledWith('Curiosity', '2017-02-27');
+		});
+
+		it('processes each date given', async () => {
+			const axiosGetSpy = jest.spyOn(axios, 'get').mockReturnValue(Promise.resolve({ data: Buffer.from('data') }));
+			const addCacheSpy = jest.spyOn(pictureServiceModule, 'addDataToCache');
+			const getUrlSpy = jest.spyOn(pictureServiceModule, 'getUrl').mockReturnValue('stub url');
+			const getImagesSpy = jest.spyOn(pictureServiceModule, 'getImagesFromPayload').mockReturnValue(Promise.resolve([ 'image' ]));
+
+			await preloadCache([ '02/27/2017', '04/14/2014' ]);
+
+			expect(axiosGetSpy).toHaveBeenCalledTimes(2);
+			expect(getImagesSpy).toHaveBeenCalledTimes(2);
+			expect(addCacheSpy).toHaveBeenCalledTimes(2);
+			expect(getUrlSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('handles a wide variety of formats and mistakes', async () => {
+			jest.spyOn(axios, 'get').mockReturnValue(Promise.resolve({ data: Buffer.from('data') }));
+			jest.spyOn(pictureServiceModule, 'addDataToCache');
+			const getUrlSpy = jest.spyOn(pictureServiceModule, 'getUrl').mockReturnValue('stub url');
+			jest.spyOn(pictureServiceModule, 'getImagesFromPayload').mockReturnValue(Promise.resolve([ 'image' ]));
+
+			await preloadCache([ '02/27/17', 'June 2, 2018', 'Jul-13-2016', 'April 31, 2018' ]);
+
+			expect(getUrlSpy).toHaveBeenCalledTimes(4);
+			expect(getUrlSpy).toHaveBeenNthCalledWith(1, 'Curiosity', '2017-02-27');
+			expect(getUrlSpy).toHaveBeenNthCalledWith(2, 'Curiosity', '2018-06-02');
+			expect(getUrlSpy).toHaveBeenNthCalledWith(3, 'Curiosity', '2016-07-13');
+			expect(getUrlSpy).toHaveBeenNthCalledWith(4, 'Curiosity', '2018-05-01');
 		});
 	});
 });

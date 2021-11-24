@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Request, Response } from 'express';
+import moment from 'moment';
 import { API_KEY } from './config';
 import { NasaApiResponse } from './nasa-api-model';
 // TODO: find a better way of making it so that global functions can be mocked in tests
@@ -27,7 +28,6 @@ export function validateRequestParameters(request:Request):{valid: boolean, reas
 }
 
 export function getUrl(rover:string, date: string):string {
-	console.log(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.toLowerCase()}/photos?earth_date=${date}&api_key=${API_KEY}`);
 	return `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.toLowerCase()}/photos?earth_date=${date}&api_key=${API_KEY}`;
 }
 
@@ -58,6 +58,20 @@ export async function getImagesFromPayload(apiResponse:NasaApiResponse):Promise<
 		});
 	}));
 	return Promise.resolve(images);
+}
+
+export async function preloadCache(unformattedDates:string[]): Promise<void[]> {
+	const dates = unformattedDates.map(value => moment(value).format('YYYY-MM-DD'));
+	const promises:Promise<void>[] = [];
+	dates.forEach(date => {
+		promises.push(axios.get(thisModule.getUrl('Curiosity', date))
+			.then(async apiResponse => {
+				const images = await thisModule.getImagesFromPayload(apiResponse.data);
+				thisModule.addDataToCache('Curiosity', date, images);
+				return Promise.resolve();
+			}));
+	});
+	return Promise.all(promises);
 }
 
 export async function getPicturesByRoverAndDate(request:Request, response: Response):Promise<void> {
