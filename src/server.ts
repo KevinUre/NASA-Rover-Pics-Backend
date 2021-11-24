@@ -3,6 +3,6 @@ import { getPicturesByRoverAndDate } from './picture-service';
 
 const app = express();
 
-app.get('/pictures', getPicturesByRoverAndDate)
+app.get('/pictures', getPicturesByRoverAndDate);
 
 export default app;
