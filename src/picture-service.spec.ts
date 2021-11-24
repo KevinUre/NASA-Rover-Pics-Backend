@@ -7,6 +7,10 @@ import { validateRequestParameters,
 import * as pictureServiceModule from './picture-service';
 import { NasaApiResponse } from './nasa-api-model';
 
+afterEach(() => {
+	jest.clearAllMocks();
+});
+
 describe('Picture Service', () => {
 	describe('validateRequestParameters', () => {
 		it('passes validation with good params', () => {
@@ -118,13 +122,20 @@ describe('Picture Service', () => {
 
 	describe('checkCacheForPictures', () => {
 		it('returns false if the cache is empty for a specific day', () => {
-			pictureServiceModule.addDataToCache('1234-56-78', [ 'some', 'data' ]);
-			const actual = checkCacheForPictures('1111-22-33');
+			pictureServiceModule.addDataToCache('curiosity', '1234-56-78', [ 'some', 'data' ]);
+			const actual = checkCacheForPictures('curiosity', '1111-22-33');
 			expect(actual).toBeFalsy();
 		});
+
+		it('returns false if the cache is empty for a specific day even if a different rover has pics', () => {
+			pictureServiceModule.addDataToCache('curiosity', '1234-56-78', [ 'some', 'data' ]);
+			const actual = checkCacheForPictures('spirit', '1234-56-78');
+			expect(actual).toBeFalsy();
+		});
+
 		it('returns data if there is some for the day', () => {
-			pictureServiceModule.addDataToCache('1234-56-78', [ 'some', 'data' ]);
-			const actual = checkCacheForPictures('1234-56-78');
+			pictureServiceModule.addDataToCache('curiosity', '1234-56-78', [ 'some', 'data' ]);
+			const actual = checkCacheForPictures('curiosity', '1234-56-78');
 			expect(actual).toStrictEqual([ 'some', 'data' ]);
 		});
 	});
@@ -147,8 +158,6 @@ describe('Picture Service', () => {
 			expect(axiosGetSpy).toHaveBeenCalledTimes(2);
 			expect(axiosGetSpy).toHaveBeenNthCalledWith(1, 'url1', { responseType: 'arraybuffer' });
 			expect(axiosGetSpy).toHaveBeenNthCalledWith(2, 'url2', { responseType: 'arraybuffer' });
-
-			axiosGetSpy.mockClear();
 		});
 	});
 
@@ -179,15 +188,8 @@ describe('Picture Service', () => {
 			expect(validateSpy).toHaveBeenCalled();
 			expect(getCacheSpy).toHaveBeenCalled();
 			expect(getImagesSpy).toHaveBeenCalled();
-			expect(addCacheSpy).toHaveBeenCalledWith('15-12-30', [ 'image' ]);
+			expect(addCacheSpy).toHaveBeenCalledWith('curiosity', '15-12-30', [ 'image' ]);
 			expect(axiosGetSpy).toHaveBeenCalledWith('stub url');
-
-			validateSpy.mockClear();
-			getUrlSpy.mockClear();
-			axiosGetSpy.mockClear();
-			getCacheSpy.mockClear();
-			addCacheSpy.mockClear();
-			getImagesSpy.mockClear();
 		});
 
 		it('does not bother nasa if the request is bad', async () => {
@@ -220,13 +222,6 @@ describe('Picture Service', () => {
 			expect(getCacheSpy).not.toHaveBeenCalled();
 			expect(getUrlSpy).not.toHaveBeenCalled();
 			expect(axiosGetSpy).not.toHaveBeenCalled();
-
-			validateSpy.mockClear();
-			getUrlSpy.mockClear();
-			axiosGetSpy.mockClear();
-			getCacheSpy.mockClear();
-			addCacheSpy.mockClear();
-			getImagesSpy.mockClear();
 		});
 
 		it('does not bother nasa if there is cached data', async () => {
@@ -257,13 +252,6 @@ describe('Picture Service', () => {
 			expect(getImagesSpy).not.toHaveBeenCalled();
 			expect(addCacheSpy).not.toHaveBeenCalledWith('15-12-30', [ 'image' ]);
 			expect(axiosGetSpy).not.toHaveBeenCalledWith('stub url');
-
-			validateSpy.mockClear();
-			getUrlSpy.mockClear();
-			axiosGetSpy.mockClear();
-			getCacheSpy.mockClear();
-			addCacheSpy.mockClear();
-			getImagesSpy.mockClear();
 		});
 	});
 });

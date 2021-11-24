@@ -27,20 +27,22 @@ export function validateRequestParameters(request:Request):{valid: boolean, reas
 }
 
 export function getUrl(rover:string, date: string):string {
+	console.log(`https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.toLowerCase()}/photos?earth_date=${date}&api_key=${API_KEY}`);
 	return `https://api.nasa.gov/mars-photos/api/v1/rovers/${rover.toLowerCase()}/photos?earth_date=${date}&api_key=${API_KEY}`;
 }
 
-const pictureCache:{[date:string]: string[]} = {};
+const pictureCache:{[rover:string]: {[date:string]: string[]}} = {};
 
-export function checkCacheForPictures(date:string):string[] | boolean {
-	if (!pictureCache[date]) {
+export function checkCacheForPictures(rover:string, date:string):string[] | boolean {
+	if (!pictureCache[rover] || !pictureCache[rover][date]) {
 		return false;
 	}
-	return pictureCache[date];
+	return pictureCache[rover][date];
 }
 
-export function addDataToCache(date:string, pictures:string[]):void {
-	pictureCache[date] = pictures;
+export function addDataToCache(rover:string, date:string, pictures:string[]):void {
+	pictureCache[rover] = {};
+	pictureCache[rover][date] = pictures;
 }
 
 export async function getImagesFromPayload(apiResponse:NasaApiResponse):Promise<string[]> {
@@ -65,15 +67,15 @@ export async function getPicturesByRoverAndDate(request:Request, response: Respo
 		response.status(400).json({ Error: reason });
 		return Promise.resolve();
 	}
-	const rover = request.query.rover as string;
+	const rover = (request.query.rover as string).toLowerCase();
 	const dateString = request.query.date as string;
 
-	const cached = thisModule.checkCacheForPictures(dateString);
+	const cached = thisModule.checkCacheForPictures(rover, dateString);
 	if (!cached) {
 		await axios.get(thisModule.getUrl(rover, dateString))
 			.then(async apiResponse => {
 				const images = await thisModule.getImagesFromPayload(apiResponse.data);
-				thisModule.addDataToCache(dateString, images);
+				thisModule.addDataToCache(rover, dateString, images);
 				response.status(200).json({ images });
 				return Promise.resolve();
 			})
