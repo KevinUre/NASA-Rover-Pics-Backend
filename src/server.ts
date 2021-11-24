@@ -1,11 +1,8 @@
 import express, { Request, Response, NextFunction } from 'express';
+import { getPicturesByRoverAndDate } from './picture-service';
 
 const app = express();
 
-const getHelloWorld = (request:Request, response: Response, next: NextFunction) => {
-	response.status(200).json({ Greeting: 'Hello World!' });
-};
-
-app.get('/hello', getHelloWorld);
+app.get('/pictures', getPicturesByRoverAndDate)
 
 export default app;
