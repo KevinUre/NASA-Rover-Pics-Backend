@@ -162,6 +162,7 @@ describe('Picture Service', () => {
 			const mockResponse = {
 				status: jest.fn().mockReturnThis(),
 				json: jest.fn().mockReturnThis(),
+				setHeader: jest.fn().mockReturnThis(),
 			} as unknown as Response;
 			const NasaDataStub = { data: [ 'image' ] };
 			const validateSpy = jest.spyOn(pictureServiceModule, 'validateRequestParameters').mockReturnValue({ valid: true });
@@ -198,6 +199,7 @@ describe('Picture Service', () => {
 			const mockResponse = {
 				status: jest.fn().mockReturnThis(),
 				json: jest.fn().mockReturnThis(),
+				setHeader: jest.fn().mockReturnThis(),
 			} as unknown as Response;
 			const NasaDataStub = { data: { key: 'value' } };
 			const validateSpy = jest.spyOn(pictureServiceModule, 'validateRequestParameters').mockReturnValue({
@@ -236,6 +238,7 @@ describe('Picture Service', () => {
 			const mockResponse = {
 				status: jest.fn().mockReturnThis(),
 				json: jest.fn().mockReturnThis(),
+				setHeader: jest.fn().mockReturnThis(),
 			} as unknown as Response;
 			const NasaDataStub = { data: [ 'image' ] };
 			const validateSpy = jest.spyOn(pictureServiceModule, 'validateRequestParameters').mockReturnValue({ valid: true });

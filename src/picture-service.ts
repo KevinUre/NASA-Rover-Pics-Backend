@@ -58,6 +58,7 @@ export async function getImagesFromPayload(apiResponse:NasaApiResponse):Promise<
 }
 
 export async function getPicturesByRoverAndDate(request:Request, response: Response):Promise<void> {
+	response.setHeader('Access-Control-Allow-Origin', '*');
 	const { valid, reason } = thisModule.validateRequestParameters(request);
 	if (!valid) {
 		response.status(400).json({ Error: reason });
