@@ -1,0 +1,8 @@
+{
+	"*.{ts,tsx,js,jsx}": [
+		"eslint --fix --fix-type layout",
+	],
+	"*.spec.*": [
+		"jest --findRelatedTests --coverage=false",
+	]
+}

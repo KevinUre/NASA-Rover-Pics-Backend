@@ -4,9 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky install",
     "serve": "nodemon src/app.ts",
     "test": "jest",
-    "lint": "eslint . --ext .js,.ts"
+    "lint": "eslint . --ext .js,.ts",
+    "precommit-check": "lint-staged --",
+    "prepush-check": "npm run typechecking && npm run test -- --no-coverage",
+    "typechecking": "tsc --noEmit --pretty"
   },
   "author": "",
   "license": "ISC",
@@ -19,7 +23,9 @@
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "eslint": "^8.3.0",
     "eslint-config-airbnb": "^19.0.1",
+    "husky": "^7.0.4",
     "jest": "^27.3.1",
+    "lint-staged": "^12.1.2",
     "nodemon": "^2.0.15",
     "supertest": "^6.1.6",
     "ts-jest": "^27.0.7",
